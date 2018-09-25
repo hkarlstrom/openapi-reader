@@ -31,6 +31,15 @@ class Response
 
     public function getContent($mediaType = null) : ?MediaType
     {
-        return $this->content[$mediaType] ?? array_shift($this->content) ?? null;
+        if (null === $mediaType) {
+            $mediaType = $this->getDefaultMediaType();
+        }
+        return $this->content[$mediaType] ?? null;
+    }
+
+    public function getDefaultMediaType() : string
+    {
+        $mediaTypes = array_keys($this->content);
+        return $mediaTypes[0];
     }
 }
