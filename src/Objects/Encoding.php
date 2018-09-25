@@ -24,9 +24,8 @@ class Encoding
     public function __construct(string $property, array $args)
     {
         $this->property      = $property;
-        $contentTypeParts    = preg_split('/\s*[;,]\s*/', $args['contentType']);
-        $this->contentType   = mb_strtolower($contentTypeParts[0]);
-        $this->contentTypes  = explode(',', str_replace(' ', '', $this->contentType));
+        $this->contentType   = mb_strtolower($args['contentType']);
+        $this->contentTypes  = preg_split('/\s*[;,]\s*/', $args['contentType']);
         $this->headers       = [];
         $this->style         = $args['style'] ?? null;
         $this->explode       = 'form' === $this->style;
