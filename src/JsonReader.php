@@ -14,6 +14,7 @@ namespace HKarlstrom\OpenApiReader;
 class JsonReader
 {
     private $raw;
+    private $cache;
 
     public function __construct(string $jsonFilePath)
     {
@@ -26,10 +27,19 @@ class JsonReader
     public function get($path)
     {
         if (is_string($path)) {
+            $cacheKey = $path;
+            if (isset($this->cache[$cacheKey])) {
+                return $this->cache[$cacheKey];
+            }
             $path = explode('/', str_replace('#/', '', $path));
+        } else {
+            $cacheKey = '#/'.implode('/', $path);
+            if (isset($this->cache[$cacheKey])) {
+                return $this->cache[$cacheKey];
+            }
         }
-        $json = $this->resolve($path);
-        return is_array($json) ? $this->extendRef($json) : $json;
+        $json                          = $this->resolve($path);
+        return $this->cache[$cacheKey] = is_array($json) ? $this->extendRef($json) : $json;
     }
 
     private function resolve(array $path)
@@ -54,6 +64,9 @@ class JsonReader
                 $retJson[$attr] = $this->extendRef($value);
             } elseif ($attr === $ref) {
                 $refJson = $this->get($value);
+                if (!is_array($refJson)) {
+                    throw new \Exception('Invalid ref: '.$value);
+                }
                 foreach ($refJson as $refAttr => $refValue) {
                     $retJson[$refAttr] = $refValue;
                 }
