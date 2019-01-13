@@ -29,6 +29,9 @@
                   "schema": {
                     "type": "string"
                   }
+                },
+                "x-response-id": {
+                  "$ref": "#/components/headers/xResponseId"
                 }
               },
               "content": {
@@ -191,6 +194,16 @@
       }
     },
     "components": {
+      "headers": {
+        "xResponseId": {
+          "required":true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "description": "Unique response ID"
+        }
+      },
       "schemas": {
         "Thing": {
           "required": [

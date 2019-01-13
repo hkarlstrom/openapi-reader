@@ -84,5 +84,6 @@ class OpenApiReaderTest extends TestCase
         $openapi = new OpenApiReader(__DIR__.'/testopenapi.json');
         $response   = $openapi->getOperationResponse('/all/', 'get', 200);
         $this->assertArrayHasKey('x-next', $response->headers);
+        $this->assertArrayHasKey('x-response-id', $response->headers);
     }
 }
