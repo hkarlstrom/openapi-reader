@@ -27,6 +27,7 @@ class Response
             $this->content[$mediaType] = new MediaType($mediaType, $mediaTypeArgs);
         }
         $this->required = $args['required'] ?? false;
+        $this->headers = $args['headers'] ?? null;
     }
 
     public function getContent($mediaType = null) : ?MediaType
