@@ -85,7 +85,8 @@ class OpenApiReaderTest extends TestCase
         $response   = $openapi->getOperationResponse('/all/', 'get', 200);
         $this->assertInstanceOf('HKarlstrom\OpenApiReader\Objects\Header', $response->getHeader('x-next'));
         $this->assertInstanceOf('HKarlstrom\OpenApiReader\Objects\Header', $response->getHeader('x-response-id'));
-        $this->assertInstanceOf('HKarlstrom\OpenApiReader\Objects\Header', $response->getHeader('X-NEXT'));
+        $this->assertInstanceOf('HKarlstrom\OpenApiReader\Objects\Header', $response->getHeader('X-NEXT')); //header names are case insensitive
         $this->assertNull($response->getHeader('x-not-defined'));
+        $this->assertSame(['x-next', 'x-response-id'], $response->getHeaderNames());
     }
 }

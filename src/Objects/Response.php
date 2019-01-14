@@ -40,6 +40,11 @@ class Response
         return $this->headers[mb_strtolower($name)] ?? null;
     }
 
+    public function getHeaderNames() : array
+    {
+        return array_keys($this->headers);
+    }
+
     public function getContent($mediaType = null) : ?MediaType
     {
         if (null === $mediaType) {
