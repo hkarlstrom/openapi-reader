@@ -15,19 +15,29 @@ class Response
 {
     public $statusCode;
     public $description;
-    public $headers;
-    public $links;
+    private $headers = [];
     private $content = [];
 
     public function __construct(string $statusCode, array $args)
     {
         $this->statusCode  = is_numeric($statusCode) ? intval($statusCode) : $statusCode;
         $this->description = $args['description'] ?? null;
+        foreach ($args['headers'] as $name => $headerArgs) {
+            if ('Content-Type' === $name) {
+                // If a response header is defined with the name "Content-Type", it SHALL be ignored.
+                continue;
+            }
+            // RFC7230 (https://tools.ietf.org/html/rfc7230#page-22) states header names are case insensitive
+            $this->headers[mb_strtolower($name)] = new Header($headerArgs);
+        }
         foreach ($args['content'] as $mediaType => $mediaTypeArgs) {
             $this->content[$mediaType] = new MediaType($mediaType, $mediaTypeArgs);
         }
-        $this->required = $args['required'] ?? false;
-        $this->headers = $args['headers'] ?? null;
+    }
+
+    public function getHeader($name) : ?Header
+    {
+        return $this->headers[mb_strtolower($name)] ?? null;
     }
 
     public function getContent($mediaType = null) : ?MediaType
