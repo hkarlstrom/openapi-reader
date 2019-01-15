@@ -22,27 +22,23 @@ class Response
     {
         $this->statusCode  = is_numeric($statusCode) ? intval($statusCode) : $statusCode;
         $this->description = $args['description'] ?? null;
-        foreach ($args['headers'] as $name => $headerArgs) {
-            if ('Content-Type' === $name) {
-                // If a response header is defined with the name "Content-Type", it SHALL be ignored.
-                continue;
+        if (isset($args['headers'])) {
+            foreach ($args['headers'] as $headerName => $headerArgs) {
+                if ('content-type' !== mb_strtolower($headerName)) {
+                    // If a response header is defined with the name "Content-Type", it SHALL be ignored.
+                    // RFC7230 (https://tools.ietf.org/html/rfc7230#page-22) states header names are case insensitive
+                    $this->headers[$headerName] = new Header($headerArgs);
+                }
             }
-            // RFC7230 (https://tools.ietf.org/html/rfc7230#page-22) states header names are case insensitive
-            $this->headers[mb_strtolower($name)] = new Header($headerArgs);
         }
-        foreach ($args['content'] as $mediaType => $mediaTypeArgs) {
+        foreach ($args['content'] ?? [] as $mediaType => $mediaTypeArgs) {
             $this->content[$mediaType] = new MediaType($mediaType, $mediaTypeArgs);
         }
     }
 
-    public function getHeader($name) : ?Header
+    public function getHeaders() : array
     {
-        return $this->headers[mb_strtolower($name)] ?? null;
-    }
-
-    public function getHeaderNames() : array
-    {
-        return array_keys($this->headers);
+        return $this->headers;
     }
 
     public function getContent($mediaType = null) : ?MediaType
