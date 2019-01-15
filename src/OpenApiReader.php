@@ -53,6 +53,8 @@ class OpenApiReader
         $parsed               = parse_url($uri);
         $trailingSlashesCount = 0;
         $path                 = $parsed['path'];
+        // If path has trailing spaces, path parameters are missing. Replace them with space character here so that the correct
+        // path can be found
         while (strEndsWith($parsed['path'], '/')) {
             ++$trailingSlashesCount;
             $parsed['path'] = mb_substr($parsed['path'], 0, mb_strlen($parsed['path']) - 1);
@@ -99,6 +101,7 @@ class OpenApiReader
                 $maxLength = $length;
                 $retPath   = $path;
                 foreach ($pathParameters as $name => $value) {
+                    // Dont add the empty (replaced with space) path parameter calues
                     if (' ' != $value) {
                         $parameters[$name] = $value;
                     }
