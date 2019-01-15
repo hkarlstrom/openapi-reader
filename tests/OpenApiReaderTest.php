@@ -83,10 +83,10 @@ class OpenApiReaderTest extends TestCase
     {
         $openapi    = new OpenApiReader(__DIR__.'/testopenapi.json');
         $response   = $openapi->getOperationResponse('/all/', 'get', 200);
-        $this->assertInstanceOf('HKarlstrom\OpenApiReader\Objects\Header', $response->getHeader('x-next'));
-        $this->assertInstanceOf('HKarlstrom\OpenApiReader\Objects\Header', $response->getHeader('x-response-id'));
-        $this->assertInstanceOf('HKarlstrom\OpenApiReader\Objects\Header', $response->getHeader('X-NEXT')); //header names are case insensitive
-        $this->assertNull($response->getHeader('x-not-defined'));
-        $this->assertSame(['x-next', 'x-response-id'], $response->getHeaderNames());
+        $headers    = $response->getHeaders();
+        $this->assertInstanceOf('HKarlstrom\OpenApiReader\Objects\Header', $headers['x-next']);
+        $this->assertInstanceOf('HKarlstrom\OpenApiReader\Objects\Header', $headers['x-response-id']);
+        $this->assertNull($headers['x-not-defined']);
+        $this->assertSame(['x-next', 'x-response-id'], array_keys($headers));
     }
 }
