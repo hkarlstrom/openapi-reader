@@ -50,9 +50,18 @@ class OpenApiReader
 
     public function getPathFromUri(string $uri, string $method, array &$parameters = []) : ?string
     {
-        $parsed         = parse_url($uri);
-        $templatePaths  = [];
-        $exact          = null;
+        $parsed               = parse_url($uri);
+        $trailingSlashesCount = 0;
+        $path                 = $parsed['path'];
+        while (strEndsWith($parsed['path'], '/')) {
+            ++$trailingSlashesCount;
+            $parsed['path'] = mb_substr($parsed['path'], 0, mb_strlen($parsed['path']) - 1);
+        }
+        for ($i = 0; $i < $trailingSlashesCount; ++$i) {
+            $parsed['path'] .= '/ ';
+        }
+        $templatePaths = [];
+        $exact         = null;
         foreach ($this->json->get('paths') as $path => $pathObject) {
             if (isset($pathObject[$method])) {
                 if (false !== mb_strpos($path, '{')) {
@@ -87,9 +96,13 @@ class OpenApiReader
         foreach ($found as $path => $pathParameters) {
             $length = mb_substr_count($path, '/');
             if ($length > $maxLength) {
-                $maxLength  = $length;
-                $retPath    = $path;
-                $parameters = $pathParameters;
+                $maxLength = $length;
+                $retPath   = $path;
+                foreach ($pathParameters as $name => $value) {
+                    if (' ' != $value) {
+                        $parameters[$name] = $value;
+                    }
+                }
             }
         }
         return $retPath;
