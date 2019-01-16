@@ -32,6 +32,14 @@ class JsonReader
                 return $this->cache[$cacheKey];
             }
             $path = explode('/', str_replace('#/', '', $path));
+            // Replace JSON encoded characters
+            // https://tools.ietf.org/html/rfc6901
+            foreach ($path as &$p) {
+                $p = str_replace('~1', '/', $p);
+                $p = str_replace('~0', '~', $p);
+                $p = str_replace('%7B', '{', $p);
+                $p = str_replace('%7D', '}', $p);
+            }
         } else {
             $cacheKey = '#/'.implode('/', $path);
             if (isset($this->cache[$cacheKey])) {
