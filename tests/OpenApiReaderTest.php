@@ -89,4 +89,10 @@ class OpenApiReaderTest extends TestCase
         $this->assertFalse(isset($headers['x-not-defined']));
         $this->assertSame(['x-next', 'x-response-id'], array_keys($headers));
     }
+
+    public function testReadReferencedValues() {
+        $openapi = new OpenApiReader(__DIR__.'/ref.json');
+        $response   = $openapi->getOperationResponse('/api/v4/admin/loyalty/brands/{brand}/vip/rewards/analytics', 'get', 500);
+        $this->assertArrayHasKey('X-Response-Id', $response->getHeaders());
+    }
 }
