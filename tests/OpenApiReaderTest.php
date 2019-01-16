@@ -86,7 +86,7 @@ class OpenApiReaderTest extends TestCase
         $headers    = $response->getHeaders();
         $this->assertInstanceOf('HKarlstrom\OpenApiReader\Objects\Header', $headers['x-next']);
         $this->assertInstanceOf('HKarlstrom\OpenApiReader\Objects\Header', $headers['x-response-id']);
-        $this->assertNull($headers['x-not-defined']);
+        $this->assertFalse(isset($headers['x-not-defined']));
         $this->assertSame(['x-next', 'x-response-id'], array_keys($headers));
     }
 }
