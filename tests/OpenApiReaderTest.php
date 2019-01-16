@@ -86,4 +86,10 @@ class OpenApiReaderTest extends TestCase
         $this->assertArrayHasKey('x-next', $response->headers);
         $this->assertArrayHasKey('x-response-id', $response->headers);
     }
+
+    public function testReadReferencedValues() {
+        $openapi = new OpenApiReader(__DIR__.'/ref.json');
+        $response   = $openapi->getOperationResponse('/api/v4/admin/loyalty/brands/{brand}/vip/rewards/analytics', 'get', 500);
+        $this->assertArrayHasKey('x-response-id', $response->headers);
+    }
 }
