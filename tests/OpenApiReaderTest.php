@@ -83,13 +83,13 @@ class OpenApiReaderTest extends TestCase
     {
         $openapi = new OpenApiReader(__DIR__.'/testopenapi.json');
         $response   = $openapi->getOperationResponse('/all/', 'get', 200);
-        $this->assertArrayHasKey('x-next', $response->headers);
-        $this->assertArrayHasKey('x-response-id', $response->headers);
+        $this->assertArrayHasKey('x-next', $response->getHeaders());
+        $this->assertArrayHasKey('x-response-id', $response->getHeaders());
     }
 
     public function testReadReferencedValues() {
         $openapi = new OpenApiReader(__DIR__.'/ref.json');
         $response   = $openapi->getOperationResponse('/api/v4/admin/loyalty/brands/{brand}/vip/rewards/analytics', 'get', 500);
-        $this->assertArrayHasKey('x-response-id', $response->headers);
+        $this->assertArrayHasKey('x-response-id', $response->getHeaders());
     }
 }
