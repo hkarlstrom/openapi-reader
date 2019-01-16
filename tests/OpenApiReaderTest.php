@@ -81,10 +81,13 @@ class OpenApiReaderTest extends TestCase
 
     public function testGetOperationResponseHeaders()
     {
-        $openapi = new OpenApiReader(__DIR__.'/testopenapi.json');
+        $openapi    = new OpenApiReader(__DIR__.'/testopenapi.json');
         $response   = $openapi->getOperationResponse('/all/', 'get', 200);
-        $this->assertArrayHasKey('x-next', $response->getHeaders());
-        $this->assertArrayHasKey('x-response-id', $response->getHeaders());
+        $headers    = $response->getHeaders();
+        $this->assertInstanceOf('HKarlstrom\OpenApiReader\Objects\Header', $headers['x-next']);
+        $this->assertInstanceOf('HKarlstrom\OpenApiReader\Objects\Header', $headers['x-response-id']);
+        $this->assertNull($headers['x-not-defined']);
+        $this->assertSame(['x-next', 'x-response-id'], array_keys($headers));
     }
 
     public function testReadReferencedValues() {
