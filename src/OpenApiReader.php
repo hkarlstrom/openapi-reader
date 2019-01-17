@@ -11,14 +11,7 @@
 
 namespace HKarlstrom\OpenApiReader;
 
-function strEndsWith($haystack, $needle)
-{
-    $length = mb_strlen($needle);
-    if (0 == $length) {
-        return true;
-    }
-    return mb_substr($haystack, -$length) === $needle;
-}
+use Rize\UriTemplate;
 
 class OpenApiReader
 {
@@ -50,65 +43,21 @@ class OpenApiReader
 
     public function getPathFromUri(string $uri, string $method, array &$parameters = []) : ?string
     {
-        $parsed               = parse_url($uri);
-        $trailingSlashesCount = 0;
-        $path                 = $parsed['path'];
-        // If path has trailing spaces, path parameters are missing. Replace them with space character here so that the correct
-        // path can be found
-        while (strEndsWith($parsed['path'], '/')) {
-            ++$trailingSlashesCount;
-            $parsed['path'] = mb_substr($parsed['path'], 0, mb_strlen($parsed['path']) - 1);
+        $parsed  = parse_url($uri);
+        if ($matched = $this->matchPath($parsed['path'], $method, $parameters)) {
+            return $matched;
         }
-        for ($i = 0; $i < $trailingSlashesCount; ++$i) {
-            $parsed['path'] .= '/ ';
-        }
-        $templatePaths = [];
-        $exact         = null;
-        foreach ($this->json->get('paths') as $path => $pathObject) {
-            if (isset($pathObject[$method])) {
-                if (false !== mb_strpos($path, '{')) {
-                    $templatePaths[] = $path;
-                } elseif (strEndsWith($parsed['path'], $path)
-                    && (null === $exact || mb_strlen($path) < mb_strlen($exact))) {
-                    $exact = $path;
-                }
+        $parts = explode('/', $parsed['path']);
+        array_shift($parts);
+        array_shift($parts);
+        while (!empty($parts) && false === mb_strpos($parts[0], '{')) {
+            if ($matched = $this->matchPath('/'.implode('/', $parts), $method, $parameters)) {
+                return $matched;
             }
-        }
-        $found = [];
-        foreach ($templatePaths as $path) {
-            $pattern = preg_replace_callback('/\/\{(.+?)\}/', function ($matches) {
-                return '/(?<'.$matches[1].'>[^/}]+?)';
-            }, $path);
-            $pattern = '/'.str_replace('/', '\/', $pattern).'$/';
-            if (preg_match_all($pattern, $parsed['path'], $matches)) {
-                $params = [];
-                foreach ($matches as $key => $values) {
-                    if (!is_numeric($key)) {
-                        $params[$key] = is_numeric($values[0]) ? intval($values[0]) : $values[0];
-                    }
-                }
-                $found[$path] = $params;
-            }
+            array_shift($parts);
         }
 
-        // If there is an exact path and template path matches, find out which one
-        // has the most / chars, i.e. is the longest match
-        $maxLength = mb_substr_count($exact ?? '', '/');
-        $retPath   = $exact;
-        foreach ($found as $path => $pathParameters) {
-            $length = mb_substr_count($path, '/');
-            if ($length > $maxLength) {
-                $maxLength = $length;
-                $retPath   = $path;
-                foreach ($pathParameters as $name => $value) {
-                    // Dont add the empty (replaced with space) path parameter calues
-                    if (' ' != $value) {
-                        $parameters[$name] = $value;
-                    }
-                }
-            }
-        }
-        return $retPath;
+        return null;
     }
 
     /**
@@ -185,5 +134,23 @@ class OpenApiReader
             }
         }
         return $codes;
+    }
+
+    private function matchPath(string $uri, string $method, array &$parameters) : ?string
+    {
+        foreach ($this->json->get('paths') as $path => $pathObject) {
+            if (isset($pathObject[$method])) {
+                if ($uri === $path) {
+                    return $path;
+                }
+                $params = (new UriTemplate())->extract($path, $uri, true);
+                if (null !== $params) {
+                    $parameters = $params;
+                    return $path;
+                }
+            }
+        }
+
+        return null;
     }
 }

@@ -50,7 +50,7 @@ class OpenApiReaderTest extends TestCase
         $this->assertSame('/things', $openapi->getPathFromUri('/things', 'get'));
         $this->assertSame('/things', $openapi->getPathFromUri('/all/things', 'get'));
         $this->assertSame('/things/{thingId}', $openapi->getPathFromUri('/things/1', 'get', $parameters));
-        $this->assertSame(1, $parameters['thingId']);
+        $this->assertSame('1', $parameters['thingId']);
         $this->assertSame('/things/{thingId}', $openapi->getPathFromUri('/things/things', 'get', $parameters));
         $this->assertSame('things', $parameters['thingId']);
     }
@@ -90,8 +90,9 @@ class OpenApiReaderTest extends TestCase
         $this->assertSame(['x-next', 'x-response-id'], array_keys($headers));
     }
 
-    public function testReadReferencedValues() {
-        $openapi = new OpenApiReader(__DIR__.'/ref.json');
+    public function testReadReferencedValues()
+    {
+        $openapi    = new OpenApiReader(__DIR__.'/ref.json');
         $response   = $openapi->getOperationResponse('/api/v4/admin/loyalty/brands/{brand}/vip/rewards/analytics', 'get', 500);
         $this->assertArrayHasKey('X-Response-Id', $response->getHeaders());
     }
