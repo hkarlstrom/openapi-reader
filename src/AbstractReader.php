@@ -42,7 +42,7 @@ abstract class AbstractReader
         return $this->cache[$cacheKey] = is_array($json) ? $this->extendRef($json) : $json;
     }
 
-    private function resolve(array $path)
+    protected function resolve(array $path)
     {
         $json = $this->raw;
         while (count($path)) {
@@ -55,7 +55,7 @@ abstract class AbstractReader
         return $json;
     }
 
-    private function extendRef($json) : array
+    protected function extendRef($json) : array
     {
         $ref     = '$'.'ref';
         $retJson = [];
