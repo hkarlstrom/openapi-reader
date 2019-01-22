@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "5a015714ac6681856a33453f4d327704",
+    "content-hash": "705e49ddfb27e40c72b6fef3526bb5d0",
     "packages": [
         {
             "name": "rize/uri-template",

@@ -1,6 +1,6 @@
 {
     "name": "hkarlstrom/openapi-reader",
-    "description": "Library for parsing OpenAPI json documentation files.",
+    "description": "Library for parsing OpenAPI JSON/YAML documentation files.",
     "license": "MIT",
     "authors": [
         {
@@ -15,10 +15,10 @@
     },
     "require": {
         "php": "^7.1",
-        "rize/uri-template": "^0.3.2",
         "ext-json": "*",
-        "symfony/yaml": "^4.2",
-        "ext-mbstring": "*"
+        "ext-mbstring": "*",
+        "rize/uri-template": "^0.3.2",
+        "symfony/yaml": "^4.2"
     },
     "require-dev": {
         "phpunit/phpunit": "^7.3.5"
