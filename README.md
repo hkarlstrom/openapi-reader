@@ -1,6 +1,6 @@
 # OpenAPI Reader
 
-Library for parsing [OpenAPI](https://swagger.io/specification/) json documentation files.
+Library for parsing [OpenAPI](https://swagger.io/specification/) JSON/YAML documentation files.
 
 ## Installation
 

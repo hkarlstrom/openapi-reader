@@ -14,17 +14,17 @@ namespace HKarlstrom\OpenApiReader\Tests;
 use HKarlstrom\OpenApiReader\OpenApiReader;
 use PHPUnit\Framework\TestCase;
 
-class OpenApiReaderTest extends TestCase
+class OpenApiReaderFromYamlTest extends TestCase
 {
     public function testVersion()
     {
-        $openapi = new OpenApiReader(__DIR__.'/testopenapi.json');
+        $openapi = new OpenApiReader(__DIR__.'/testopenapi.yaml');
         $this->assertSame('3.0.0', $openapi->getVersion());
     }
 
     public function testInfo()
     {
-        $openapi = new OpenApiReader(__DIR__.'/testopenapi.json');
+        $openapi = new OpenApiReader(__DIR__.'/testopenapi.yaml');
         $info    = $openapi->getInfo();
         $this->assertInstanceOf('HKarlstrom\OpenApiReader\Objects\Info', $info);
         $this->assertSame('1.0.0', $info->version);
@@ -34,7 +34,7 @@ class OpenApiReaderTest extends TestCase
 
     public function testServers()
     {
-        $openapi = new OpenApiReader(__DIR__.'/testopenapi.json');
+        $openapi = new OpenApiReader(__DIR__.'/testopenapi.yaml');
         $servers = $openapi->getServers();
         $this->assertCount(1, $servers);
         $this->assertInstanceOf('HKarlstrom\OpenApiReader\Objects\Server', $servers[0]);
@@ -44,7 +44,7 @@ class OpenApiReaderTest extends TestCase
 
     public function testGetPathFromUri()
     {
-        $openapi    = new OpenApiReader(__DIR__.'/testopenapi.json');
+        $openapi    = new OpenApiReader(__DIR__.'/testopenapi.yaml');
         $parameters = [];
         $this->assertNull($openapi->getPathFromUri('/foo', 'get'));
         $this->assertSame('/things', $openapi->getPathFromUri('/things', 'get'));
@@ -57,7 +57,7 @@ class OpenApiReaderTest extends TestCase
 
     public function testGetOperationParameters()
     {
-        $openapi    = new OpenApiReader(__DIR__.'/testopenapi.json');
+        $openapi    = new OpenApiReader(__DIR__.'/testopenapi.yaml');
         $parameters = $openapi->getOperationParameters('/things', 'get');
         $parameter  = $parameters[0];
         $this->assertInstanceOf('HKarlstrom\OpenApiReader\Objects\Parameter', $parameter);
@@ -74,14 +74,14 @@ class OpenApiReaderTest extends TestCase
 
     public function testGetOperationResponseCodes()
     {
-        $openapi = new OpenApiReader(__DIR__.'/testopenapi.json');
+        $openapi = new OpenApiReader(__DIR__.'/testopenapi.yaml');
         $codes   = $openapi->getOperationResponseCodes('/things', 'get');
         $this->assertSame([200, 'default'], $codes);
     }
 
     public function testGetOperationResponseHeaders()
     {
-        $openapi    = new OpenApiReader(__DIR__.'/testopenapi.json');
+        $openapi    = new OpenApiReader(__DIR__.'/testopenapi.yaml');
         $response   = $openapi->getOperationResponse('/all/', 'get', 200);
         $headers    = $response->getHeaders();
         $this->assertInstanceOf('HKarlstrom\OpenApiReader\Objects\Header', $headers['x-next']);
@@ -92,7 +92,7 @@ class OpenApiReaderTest extends TestCase
 
     public function testReadReferencedValues()
     {
-        $openapi    = new OpenApiReader(__DIR__.'/ref.json');
+        $openapi    = new OpenApiReader(__DIR__.'/ref.yaml');
         $response   = $openapi->getOperationResponse('/api/v4/admin/loyalty/brands/{brand}/vip/rewards/analytics', 'get', 500);
         $this->assertArrayHasKey('X-Response-Id', $response->getHeaders());
     }

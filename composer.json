@@ -15,7 +15,10 @@
     },
     "require": {
         "php": "^7.1",
-        "rize/uri-template": "^0.3.2"
+        "rize/uri-template": "^0.3.2",
+        "ext-json": "*",
+        "symfony/yaml": "^4.2",
+        "ext-mbstring": "*"
     },
     "require-dev": {
         "phpunit/phpunit": "^7.3.5"

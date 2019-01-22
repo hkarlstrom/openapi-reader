@@ -25,20 +25,37 @@ class OpenApiReader
         'patch',
         'trace',
     ];
+    private $reader;
 
+    /**
+     * OpenApiReader constructor.
+     *
+     * @param string $openApiFilePath
+     *
+     * @throws \Exception
+     */
     public function __construct(string $openApiFilePath)
     {
-        $this->json = new JsonReader($openApiFilePath);
+        if (preg_match('/\.json$/', $openApiFilePath) === 1) {
+            $this->reader = new JsonReader($openApiFilePath);
+            return;
+        }
+        if (preg_match('/\.ya?ml$/', $openApiFilePath) === 1) {
+            $this->reader = new YamlReader($openApiFilePath);
+            return;
+        }
+
+        throw new \Exception('OpenAPI file name must have .json, .yaml or .yml extension');
     }
 
     public function getVersion() : string
     {
-        return $this->json->get('openapi');
+        return $this->reader->get('openapi');
     }
 
     public function getInfo() : Objects\Info
     {
-        return new Objects\Info($this->json->get('info'));
+        return new Objects\Info($this->reader->get('info'));
     }
 
     public function getPathFromUri(string $uri, string $method, array &$parameters = []) : ?string
@@ -66,7 +83,7 @@ class OpenApiReader
     public function getServers() : array
     {
         $servers = [];
-        foreach ($this->json->get(['servers']) as $args) {
+        foreach ($this->reader->get(['servers']) as $args) {
             $servers[] = new Objects\Server($args);
         }
         return $servers;
@@ -74,7 +91,7 @@ class OpenApiReader
 
     public function getSecurityScheme(string $securitySchemeName) : ?Objects\SecurityScheme
     {
-        $data = $this->json->get(['components', 'securitySchemes', $securitySchemeName]);
+        $data = $this->reader->get(['components', 'securitySchemes', $securitySchemeName]);
         if (!$data) {
             return null;
         }
@@ -89,7 +106,7 @@ class OpenApiReader
     {
         $securitySchemes            = [];
         $securityRequirements       = [];
-        $securityRequirementObjects = $this->json->get(['paths', $path, $operation, 'security']) ?? $this->json->get(['security']) ?? [];
+        $securityRequirementObjects = $this->reader->get(['paths', $path, $operation, 'security']) ?? $this->reader->get(['security']) ?? [];
         foreach ($securityRequirementObjects as $securityRequirementObject) {
             $securityRequirements = array_merge($securityRequirements, $securityRequirementObject);
         }
@@ -99,8 +116,8 @@ class OpenApiReader
     public function getOperationParameters(string $path, string $operation) : array
     {
         $parameters          = [];
-        $operationParameters = $this->json->get(['paths', $path, 'parameters'])             ?? [];
-        $pathParameters      = $this->json->get(['paths', $path, $operation, 'parameters']) ?? [];
+        $operationParameters = $this->reader->get(['paths', $path, 'parameters'])             ?? [];
+        $pathParameters      = $this->reader->get(['paths', $path, $operation, 'parameters']) ?? [];
         foreach (array_merge($operationParameters, $pathParameters) as $p) {
             $parameters[] = new Objects\Parameter($p);
         }
@@ -109,7 +126,7 @@ class OpenApiReader
 
     public function getOperationRequestBody(string $path, string $operation) : ?Objects\RequestBody
     {
-        $requestBody = $this->json->get(['paths', $path, $operation, 'requestBody']);
+        $requestBody = $this->reader->get(['paths', $path, $operation, 'requestBody']);
         if (null != $requestBody) {
             return new Objects\RequestBody($requestBody);
         }
@@ -121,13 +138,13 @@ class OpenApiReader
         if (null === $statusCode) {
             $statusCode = $this->getOperationResponseCodes($path, $operation)[0];
         }
-        $args = $this->json->get(['paths', $path, $operation, 'responses', $statusCode]);
+        $args = $this->reader->get(['paths', $path, $operation, 'responses', $statusCode]);
         return null === $args ? null : new Objects\Response($statusCode, $args);
     }
 
     public function getOperationResponseCodes(string $path, string $operation) : array
     {
-        $codes = array_keys($this->json->get(['paths', $path, $operation, 'responses']));
+        $codes = array_keys($this->reader->get(['paths', $path, $operation, 'responses']));
         foreach ($codes as &$code) {
             if (is_numeric($code)) {
                 $code = intval($code);
@@ -138,7 +155,7 @@ class OpenApiReader
 
     private function matchPath(string $uri, string $method, array &$parameters) : ?string
     {
-        foreach ($this->json->get('paths') as $path => $pathObject) {
+        foreach ($this->reader->get('paths') as $path => $pathObject) {
             if (isset($pathObject[$method])) {
                 if ($uri === $path) {
                     return $path;
