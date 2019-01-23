@@ -38,42 +38,42 @@ abstract class AbstractReader
                 return $this->cache[$cacheKey];
             }
         }
-        $json                          = $this->resolve($path);
-        return $this->cache[$cacheKey] = is_array($json) ? $this->extendRef($json) : $json;
+        $data                          = $this->resolve($path);
+        return $this->cache[$cacheKey] = is_array($data) ? $this->extendRef($data) : $data;
     }
 
     protected function resolve(array $path)
     {
-        $json = $this->raw;
+        $data = $this->raw;
         while (count($path)) {
             $key = array_shift($path);
-            if (!isset($json[$key])) {
+            if (!isset($data[$key])) {
                 return null;
             }
-            $json = $json[$key];
+            $data = $data[$key];
         }
-        return $json;
+        return $data;
     }
 
-    protected function extendRef($json) : array
+    protected function extendRef($data) : array
     {
         $ref     = '$'.'ref';
-        $retJson = [];
-        foreach ($json as $attr => $value) {
+        $retData = [];
+        foreach ($data as $attr => $value) {
             if (is_array($value) && $value != []) {
-                $retJson[$attr] = $this->extendRef($value);
+                $retData[$attr] = $this->extendRef($value);
             } elseif ($attr === $ref) {
-                $refJson = $this->get($value);
-                if (!is_array($refJson)) {
+                $refData = $this->get($value);
+                if (!is_array($refData)) {
                     throw new \Exception('Invalid ref: '.$value);
                 }
-                foreach ($refJson as $refAttr => $refValue) {
-                    $retJson[$refAttr] = $refValue;
+                foreach ($refData as $refAttr => $refValue) {
+                    $retData[$refAttr] = $refValue;
                 }
             } else {
-                $retJson[$attr] = $value;
+                $retData[$attr] = $value;
             }
         }
-        return $retJson;
+        return $retData;
     }
 }
