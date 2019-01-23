@@ -11,11 +11,13 @@
 
 namespace HKarlstrom\OpenApiReader;
 
-class JsonReader extends AbstractReader
+use Symfony\Component\Yaml\Yaml;
+
+class YamlReader extends AbstractReader
 {
 
     /**
-     * JsonReader constructor.
+     * YamlReader constructor.
      *
      * @param string $filePath
      *
@@ -24,9 +26,9 @@ class JsonReader extends AbstractReader
     public function __construct(string $filePath)
     {
         if (!file_exists($filePath)) {
-            throw new \Exception('JSON file ('.$filePath.') does not exist');
+            throw new \Exception('YAML file ('.$filePath.') does not exist');
         }
-        $this->raw = json_decode(file_get_contents($filePath), true);
+        $this->raw = Yaml::parseFile($filePath);
     }
 
 }

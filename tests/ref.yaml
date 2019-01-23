@@ -1,0 +1,80 @@
+openapi: 3.0.2
+info:
+  title: Sample API spec
+  description: This is a sample API documentation.
+  version: 0.0.1
+  contact:
+    name: Jonh Snow
+    url: "/"
+    email: john@snow.example.org
+paths:
+  "/api/v4/admin/loyalty/brands/{brand}/vip/rewards/analytics":
+    parameters:
+      - name: brand
+        in: path
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+        description: The brand ID
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - rewards management
+      parameters:
+        - name: start
+          in: query
+          required: true
+          schema:
+            type: date
+          example: '2018-07-01'
+        - name: end
+          in: query
+          required: true
+          schema:
+            type: date
+          example: '2018-07-02'
+      responses:
+        '200':
+          description: Get all analytical numbers
+          headers:
+            X-Response-Id:
+              schema:
+                type: string
+                format: uuid
+              required: true
+              description: A unique Id of the response
+          content:
+            application/json:
+              schema:
+                type: object
+        '403':
+          description: No access
+          headers:
+            X-Response-Id:
+              schema:
+                type: string
+                format: uuid
+              required: true
+              description: A unique Id of the response
+          content:
+            application/json:
+              schema:
+                type: object
+        '500':
+          description: Server failed to serve this request due to unresolvable runtime
+            condition.
+          headers:
+            X-Response-Id:
+              "$ref": "#/paths/~1api~1v4~1admin~1loyalty~1brands~1%7Bbrand%7D~1vip~1rewards~1analytics/get/responses/403/headers/X-Response-Id"
+          content:
+            application/json:
+              schema:
+                "$ref": "#/paths/~1api~1v4~1admin~1loyalty~1brands~1%7Bbrand%7D~1vip~1rewards~1analytics/get/responses/403/content/application~1json/schema"
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: string
