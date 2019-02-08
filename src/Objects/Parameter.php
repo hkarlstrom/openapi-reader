@@ -27,14 +27,14 @@ class Parameter
     public function __construct(array $args)
     {
         if (!isset($args['name'])) {
-            throw new Exception('Parameter name is required.');
+            throw new \Exception('Parameter name is required.');
         }
         $this->name = $args['name'];
         if (!isset($args['in'])) {
-            throw new Exception('Parameter in is required.');
+            throw new \Exception('Parameter in is required.');
         }
         if (!in_array($args['in'], ['query', 'header', 'path', 'cookie'])) {
-            throw new Exception('Parameter in must be one of query|header|path|cookie.');
+            throw new \Exception('Parameter in must be one of query|header|path|cookie.');
         }
         $this->in              = $args['in'];
         $this->description     = $args['description']                             ?? null;
