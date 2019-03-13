@@ -13,7 +13,26 @@ namespace HKarlstrom\OpenApiReader;
 
 abstract class AbstractReader
 {
+    /**
+     * @throws \Exception If the OpenAPI file is not a supported type.
+     */
+    public static function fromFile(string $openApiFilePath): AbstractReader
+    {
+        if (preg_match('/\.json$/', $openApiFilePath) === 1) {
+            return new JsonReader($openApiFilePath);
+        }
+
+        if (preg_match('/\.ya?ml$/', $openApiFilePath) === 1) {
+            return new YamlReader($openApiFilePath);
+        }
+
+        throw new \Exception('OpenAPI file name must have .json, .yaml or .yml extension');
+    }
+
+    /** @var array */
     protected $raw;
+
+    /** @var array */
     protected $cache;
 
     public function get($path)
