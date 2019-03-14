@@ -15,6 +15,7 @@ use Rize\UriTemplate;
 
 class OpenApiReader
 {
+    /** @var string[] */
     private static $methods = [
         'get',
         'put',
@@ -25,27 +26,13 @@ class OpenApiReader
         'patch',
         'trace',
     ];
+
+    /** @var AbstractReader */
     private $reader;
 
-    /**
-     * OpenApiReader constructor.
-     *
-     * @param string $openApiFilePath
-     *
-     * @throws \Exception
-     */
     public function __construct(string $openApiFilePath)
     {
-        if (preg_match('/\.json$/', $openApiFilePath) === 1) {
-            $this->reader = new JsonReader($openApiFilePath);
-            return;
-        }
-        if (preg_match('/\.ya?ml$/', $openApiFilePath) === 1) {
-            $this->reader = new YamlReader($openApiFilePath);
-            return;
-        }
-
-        throw new \Exception('OpenAPI file name must have .json, .yaml or .yml extension');
+        $this->reader = AbstractReader::fromFile($openApiFilePath);
     }
 
     public function getVersion() : string
