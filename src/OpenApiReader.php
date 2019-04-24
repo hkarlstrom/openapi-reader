@@ -30,9 +30,19 @@ class OpenApiReader
     /** @var AbstractReader */
     private $reader;
 
-    public function __construct(string $openApiFilePath)
+    /**
+     * @property string|array $openApiSchema
+     * @throws \Exception If the OpenAPI format not supported.
+     */
+    public function __construct($openApiSchema)
     {
-        $this->reader = AbstractReader::fromFile($openApiFilePath);
+    	  if (is_string($openApiSchema)) {
+    	  	  $this->reader = AbstractReader::fromFile($openApiSchema);
+    	  } elseif (is_array($openApiSchema)) {
+    	  	  $this->reader = AbstractReader::fromArray($openApiSchema);
+    	  } else {
+            throw new \Exception('OpenAPI must be a file name or an array');
+    	  }
     }
 
     public function getVersion() : string
