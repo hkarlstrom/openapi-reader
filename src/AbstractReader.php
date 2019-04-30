@@ -29,6 +29,11 @@ abstract class AbstractReader
         throw new \Exception('OpenAPI file name must have .json, .yaml or .yml extension');
     }
 
+    public static function fromArray(array $openApiSchema): AbstractReader
+    {
+    	  return new ArrayReader($openApiSchema);
+    }
+
     /** @var array */
     protected $raw;
 
