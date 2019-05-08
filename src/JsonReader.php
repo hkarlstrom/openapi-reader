@@ -27,6 +27,9 @@ class JsonReader extends AbstractReader
             throw new \Exception('JSON file ('.$filePath.') does not exist');
         }
         $this->raw = json_decode(file_get_contents($filePath), true);
-    }
 
+        if (json_last_error() > 0) {
+            throw new \Exception('JSON file ('.$filePath.') parsing failed: '.json_last_error_msg());
+        }
+    }
 }
