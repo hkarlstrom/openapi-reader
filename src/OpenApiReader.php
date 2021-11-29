@@ -55,6 +55,16 @@ class OpenApiReader
         return new Objects\Info($this->reader->get('info'));
     }
 
+    public function getPaths() : array
+    {
+        return $this->reader->get('paths') ?? [];
+    }
+
+    public function getPathsList() : array
+    {
+        return array_keys($this->reader->get('paths') ?? []);
+    }
+
     public function getPathFromUri(string $uri, string $method, array &$parameters = []) : ?string
     {
         $parsed  = parse_url($uri);
