@@ -8,7 +8,6 @@
  * @copyright Copyright (c) 2018 Henrik Karlström
  * @license   MIT
  */
-
 namespace HKarlstrom\OpenApiReader;
 
 abstract class AbstractReader
@@ -31,7 +30,7 @@ abstract class AbstractReader
 
     public static function fromArray(array $openApiSchema): AbstractReader
     {
-    	  return new ArrayReader($openApiSchema);
+        return new ArrayReader($openApiSchema);
     }
 
     /** @var array */

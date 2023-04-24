@@ -8,7 +8,6 @@
  * @copyright Copyright (c) 2018 Henrik Karlström
  * @license   MIT
  */
-
 namespace HKarlstrom\OpenApiReader;
 
 use Rize\UriTemplate;
@@ -36,13 +35,13 @@ class OpenApiReader
      */
     public function __construct($openApiSchema)
     {
-    	  if (is_string($openApiSchema)) {
-    	  	  $this->reader = AbstractReader::fromFile($openApiSchema);
-    	  } elseif (is_array($openApiSchema)) {
-    	  	  $this->reader = AbstractReader::fromArray($openApiSchema);
-    	  } else {
+        if (is_string($openApiSchema)) {
+            $this->reader = AbstractReader::fromFile($openApiSchema);
+        } elseif (is_array($openApiSchema)) {
+            $this->reader = AbstractReader::fromArray($openApiSchema);
+        } else {
             throw new \Exception('OpenAPI must be a file name or an array');
-    	  }
+        }
     }
 
     public function getVersion() : string
@@ -111,19 +110,13 @@ class OpenApiReader
 
     public function getOperationSecurity(string $path, string $operation) : array
     {
-        $securitySchemes            = [];
-        $securityRequirements       = [];
-        $securityRequirementObjects = $this->reader->get(['paths', $path, $operation, 'security']) ?? $this->reader->get(['security']) ?? [];
-        foreach ($securityRequirementObjects as $securityRequirementObject) {
-            $securityRequirements = array_merge($securityRequirements, $securityRequirementObject);
-        }
-        return $securityRequirements;
+        return $this->reader->get(['paths', $path, $operation, 'security']) ?? $this->reader->get(['security']) ?? [];
     }
 
     public function getOperationParameters(string $path, string $operation) : array
     {
         $parameters          = [];
-        $operationParameters = $this->reader->get(['paths', $path, 'parameters'])             ?? [];
+        $operationParameters = $this->reader->get(['paths', $path, 'parameters']) ?? [];
         $pathParameters      = $this->reader->get(['paths', $path, $operation, 'parameters']) ?? [];
         foreach (array_merge($operationParameters, $pathParameters) as $p) {
             $parameters[] = new Objects\Parameter($p);
