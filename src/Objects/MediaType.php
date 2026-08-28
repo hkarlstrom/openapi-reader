@@ -8,7 +8,6 @@
  * @copyright Copyright (c) 2018 Henrik Karlström
  * @license   MIT
  */
-
 namespace HKarlstrom\OpenApiReader\Objects;
 
 class MediaType
@@ -22,15 +21,15 @@ class MediaType
     public function __construct(string $type, array $args)
     {
         $this->type     = $type;
-        $this->schema   = $args['schema']   ?? null;
-        $this->example  = $args['example']  ?? null;
+        $this->schema   = $args['schema'] ?? null;
+        $this->example  = $args['example'] ?? null;
         $this->examples = $args['examples'] ?? null;
         foreach ($args['encoding'] ?? [] as $property => $encodingArgs) {
             $this->encoding[$property] = new Encoding($property, $encodingArgs);
         }
     }
 
-    public function getExample(string $type = null) : ?array
+    public function getExample(?string $type = null) : ?array
     {
         return $this->examples[$type] ?? $this->example;
     }
